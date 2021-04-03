@@ -54,18 +54,28 @@ def main():
     # 検索ボタンクリック
     driver.find_element_by_class_name("topSearch__button").click()
 
-    # ページ終了まで繰り返し取得
-    exp_name_list = []
-    # 会社名ではなく内容を取得
-    name_list = driver.find_elements_by_class_name("cassetteRecruit__main")
-
-    # 1ページ分繰り返し
-    print(len(name_list))
-    for name in name_list:
-        exp_name_list.append(name.text)
-        print(name.text)
-        
-
+    # 仕事内容、給与、初年度年収のリストを作成
+    exp_naiyou_list = []
+    exp_kyuyo_list = []
+    exp_nenshu_list = []
+    
+    # 3項目を50件目まで取得
+    for i in range(1,51):
+        xpath_naiyou = "/html/body/div[1]/div[3]/form/div/div["+str(i)+"]/div/div[2]/div[1]/table/tbody/tr[1]/td"
+        naiyou_list = driver.find_elements_by_xpath(xpath_naiyou)
+        for naiyou in naiyou_list:
+            exp_naiyou_list.append(naiyou.text)
+            print(naiyou.text)
+        xpath_kyuyo = "/html/body/div[1]/div[3]/form/div/div["+str(i)+"]/div/div[2]/div[1]/table/tbody/tr[4]/td"
+        kyuyo_list = driver.find_elements_by_xpath(xpath_kyuyo)
+        for kyuyo in kyuyo_list:
+            exp_naiyou_list.append(kyuyo.text)
+            print(kyuyo.text)
+        xpath_nenshu = "/html/body/div[1]/div[3]/form/div/div["+str(i)+"]/div/div[2]/div[1]/table/tbody/tr[5]/td"
+        nenshu_list = driver.find_elements_by_xpath(xpath_nenshu)
+        for nenshu in nenshu_list:
+            exp_nenshu_list.append(nenshu.text)
+            print(nenshu.text)
 
 # 直接起動された場合はmain()を起動(モジュールとして呼び出された場合は起動しないようにするため)
 if __name__ == "__main__":
