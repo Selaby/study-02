@@ -1,11 +1,11 @@
+# printで結果を表示することはできるが、Pandasで出力する方法がわからない
+
 import os
 from selenium.webdriver import Chrome, ChromeOptions
 import time
 import pandas as pd
 
 # Chromeを起動する関数
-
-
 def set_driver(driver_path, headless_flg):
     # Chromeドライバーの読み込み
     options = ChromeOptions()
@@ -26,10 +26,8 @@ def set_driver(driver_path, headless_flg):
     return Chrome(executable_path=os.getcwd() + "/" + driver_path, options=options)
 
 # main処理
-
-
 def main():
-    search_keyword = "高収入"
+    search_keyword = input("検索キーワードを入力　＞＞　")
     # driverを起動
     if os.name == 'nt': #Windows
         driver = set_driver("chromedriver.exe", False)
@@ -58,25 +56,41 @@ def main():
     exp_naiyou_list = []
     exp_kyuyo_list = []
     exp_nenshu_list = []
-    
-    # 3項目を50件目まで取得
-    for i in range(1,51):
-        xpath_naiyou = "/html/body/div[1]/div[3]/form/div/div["+str(i)+"]/div/div[2]/div[1]/table/tbody/tr[1]/td"
-        naiyou_list = driver.find_elements_by_xpath(xpath_naiyou)
-        for naiyou in naiyou_list:
-            exp_naiyou_list.append(naiyou.text)
-            print(naiyou.text)
-        xpath_kyuyo = "/html/body/div[1]/div[3]/form/div/div["+str(i)+"]/div/div[2]/div[1]/table/tbody/tr[4]/td"
-        kyuyo_list = driver.find_elements_by_xpath(xpath_kyuyo)
-        for kyuyo in kyuyo_list:
-            exp_naiyou_list.append(kyuyo.text)
-            print(kyuyo.text)
-        xpath_nenshu = "/html/body/div[1]/div[3]/form/div/div["+str(i)+"]/div/div[2]/div[1]/table/tbody/tr[5]/td"
-        nenshu_list = driver.find_elements_by_xpath(xpath_nenshu)
-        for nenshu in nenshu_list:
-            exp_nenshu_list.append(nenshu.text)
-            print(nenshu.text)
 
+    # 3項目を50件目まで取得
+    while True:
+        for i in range(1,51):
+            xpath_naiyou = "/html/body/div[1]/div[3]/form/div/div["+str(i)+"]/div/div["+"*"+"]/div[1]/table/tbody/tr[1]/td"
+            naiyou_list = driver.find_elements_by_xpath(xpath_naiyou)
+            xpath_kyuyo = "/html/body/div[1]/div[3]/form/div/div["+str(i)+"]/div/div["+"*"+"]/div[1]/table/tbody/tr[4]/td"
+            kyuyo_list = driver.find_elements_by_xpath(xpath_kyuyo)
+            xpath_nenshu = "/html/body/div[1]/div[3]/form/div/div["+str(i)+"]/div/div["+"*"+"]/div[1]/table/tbody/tr[5]/td"
+            nenshu_list = driver.find_elements_by_xpath(xpath_nenshu)
+            # 複数項目をまとめてforで拾い上げるやり方
+            for naiyou, kyuyo, nenshu in zip(naiyou_list, kyuyo_list, nenshu_list):
+                exp_naiyou_list.append(naiyou.text)
+                exp_kyuyo_list.append(kyuyo.text)
+                exp_nenshu_list.append(nenshu.text)
+
+                # print(naiyou.text)
+                # print(kyuyo.text)
+                # print(nenshu.text)
+
+        # ページ送り    
+        next_page = driver.find_elements_by_class_name("iconFont--arrowLeft")
+        if len(next_page) >= 1:
+            next_page_link = next_page[0].get_attribute("href")
+            driver.get(next_page_link)
+        else:
+            print("最終ページです。終了します。")
+            break
+    
+    df = pd.DataFrame({"仕事内容":exp_naiyou_list,
+                       "給与":exp_kyuyo_list,
+                       "年収":exp_nenshu_list})
+    df.to_csv("mynavi.csv", encoding="utf_8-sig")
+    print("csvファイルを出力しました")
+    
 # 直接起動された場合はmain()を起動(モジュールとして呼び出された場合は起動しないようにするため)
 if __name__ == "__main__":
     main()
