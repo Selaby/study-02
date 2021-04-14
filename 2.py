@@ -1,5 +1,3 @@
-# printで結果を表示することはできるが、Pandasで出力する方法がわからない
-
 import os
 from selenium.webdriver import Chrome, ChromeOptions
 import time
