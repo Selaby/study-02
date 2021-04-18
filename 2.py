@@ -41,6 +41,7 @@ def main():
     driver.get("https://tenshoku.mynavi.jp/")
     time.sleep(5)
  
+    # 例外処理 https://www.headboost.jp/python-try-except/
     try:
         # ポップアップを閉じる
         driver.execute_script('document.querySelector(".karte-close").click()')
@@ -48,7 +49,7 @@ def main():
         # ポップアップを閉じる
         driver.execute_script('document.querySelector(".karte-close").click()')
     except:
-        pass
+        pass # ポップアップが出ない場合は何も行わない
     
     # 検索窓に入力
     driver.find_element_by_class_name(
