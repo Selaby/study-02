@@ -23,6 +23,12 @@ def set_driver(driver_path, headless_flg):
     # ChromeのWebDriverオブジェクトを作成する。
     return Chrome(executable_path=os.getcwd() + "/" + driver_path, options=options)
 
+def find_table_target_word(th_elms, td_elms, target:str):
+    # tableのthからtargetの文字列を探し一致する行のtdを返す
+    for th_elm,td_elm in zip(th_elms,td_elms):
+        if th_elm.text == target:
+            return td_elm.text
+
 # main処理
 def main():
     search_keyword = input("検索キーワードを入力　＞＞　")
@@ -57,22 +63,18 @@ def main():
 
     # 3項目を50件目まで取得
     while True:
-        for i in range(1,51):
-            xpath_naiyou = "/html/body/div[1]/div[3]/form/div/div["+str(i)+"]/div/div["+"*"+"]/div[1]/table/tbody/tr[1]/td"
-            naiyou_list = driver.find_elements_by_xpath(xpath_naiyou)
-            xpath_kyuyo = "/html/body/div[1]/div[3]/form/div/div["+str(i)+"]/div/div["+"*"+"]/div[1]/table/tbody/tr[4]/td"
-            kyuyo_list = driver.find_elements_by_xpath(xpath_kyuyo)
-            xpath_nenshu = "/html/body/div[1]/div[3]/form/div/div["+str(i)+"]/div/div["+"*"+"]/div[1]/table/tbody/tr[5]/td"
-            nenshu_list = driver.find_elements_by_xpath(xpath_nenshu)
-            # 複数項目をまとめてforで拾い上げるやり方
-            for naiyou, kyuyo, nenshu in zip(naiyou_list, kyuyo_list, nenshu_list):
-                exp_naiyou_list.append(naiyou.text)
-                exp_kyuyo_list.append(kyuyo.text)
-                exp_nenshu_list.append(nenshu.text)
+        # 検索結果の一番上の会社名を取得(まれに１行目が広告の場合、おかしな動作をするためcassetteRecruit__headingで広告を除外している)
+        table_list = driver.find_elements_by_css_selector(".cassetteRecruit .tableCondition")
 
-                # print(naiyou.text)
-                # print(kyuyo.text)
-                # print(nenshu.text)
+        # 1ページ分繰り返し
+        for table in table_list:
+            # 3項目をtableから探す
+            naiyou = find_table_target_word(table.find_elements_by_tag_name("th"), table.find_elements_by_tag_name("td"), "仕事内容")
+            exp_naiyou_list.append(naiyou)
+            kyuyo = find_table_target_word(table.find_elements_by_tag_name("th"), table.find_elements_by_tag_name("td"), "給与")
+            exp_kyuyo_list.append(kyuyo)
+            nenshu = find_table_target_word(table.find_elements_by_tag_name("th"), table.find_elements_by_tag_name("td"), "初年度年収")
+            exp_nenshu_list.append(nenshu)
 
         # ページ送り    
         next_page = driver.find_elements_by_class_name("iconFont--arrowLeft")
@@ -85,7 +87,7 @@ def main():
     
     df = pd.DataFrame({"仕事内容":exp_naiyou_list,
                        "給与":exp_kyuyo_list,
-                       "年収":exp_nenshu_list})
+                       "初年度年収":exp_nenshu_list})
     df.to_csv("mynavi.csv", encoding="utf_8-sig")
     print("csvファイルを出力しました")
     
