@@ -1,8 +1,11 @@
 import os
 from selenium.webdriver import Chrome, ChromeOptions
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 import pandas as pd
 import datetime
+
 
 LOG_FILE_PATH = "mynavi.log"
 
