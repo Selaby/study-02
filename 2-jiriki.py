@@ -1,5 +1,6 @@
+import os
 from selenium import webdriver
-# from selenium.webdriver.common.keys import Keys
+from selenium.webdriver import Chrome, ChromeOptions
 import time
 import pandas as pd
 import numpy as np
@@ -7,6 +8,26 @@ import datetime
 from webdriver_manager.chrome import ChromeDriverManager
 
 LOG_FILE_PATH = "mynavi.log"
+
+### 模範解答から拝借 Chromeを起動する関数
+def set_driver(driver_path, headless_flg):
+    # Chromeドライバーの読み込み
+    options = ChromeOptions()
+
+    # ヘッドレスモード（画面非表示モード）をの設定
+    if headless_flg == True:
+        options.add_argument('--headless')
+
+    # 起動オプションの設定
+    options.add_argument(
+        '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36')
+    # options.add_argument('log-level=3')
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--ignore-ssl-errors')
+    options.add_argument('--incognito')          # シークレットモードの設定を付与
+
+    # ChromeのWebDriverオブジェクトを作成する。
+    return Chrome(executable_path=os.getcwd() + "/" + driver_path, options=options)
 
 ### 模範解答から拝借 ログファイルおよびコンソール出力
 def log(txt):
@@ -32,9 +53,15 @@ def main():
     search_word = input("検索ワードを入力してください >> ")
     log("検索キーワード:{}".format(search_word))
 
-    # ブラウザを開く。
-    driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+    # ブラウザを開く これだとbotだと丸わかりでブロックされてしまう
+    # driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
 
+    # 模範解答から拝借 driverを起動
+    if os.name == 'nt': #Windows
+        driver = set_driver("chromedriver.exe", False)
+    elif os.name == 'posix': #Mac
+        driver = set_driver("chromedriver", False)
+    
     # マイナビ転職のTOP画面を開く
     # driver.get("https://tenshoku.mynavi.jp/")
 
