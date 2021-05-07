@@ -4,6 +4,7 @@ import time
 import pandas as pd
 import numpy as np
 import datetime
+from webdriver_manager.chrome import ChromeDriverManager
 
 LOG_FILE_PATH = "mynavi.log"
 
@@ -32,7 +33,7 @@ def main():
     log("検索キーワード:{}".format(search_word))
 
     # ブラウザを開く。
-    driver = webdriver.Chrome(executable_path='D:\Documents\OneDrive - 武内 健太朗\My Python\chromedriver.exe')
+    driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
 
     # マイナビ転職のTOP画面を開く。
     driver.get("https://tenshoku.mynavi.jp/")
