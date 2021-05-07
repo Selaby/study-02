@@ -35,8 +35,11 @@ def main():
     # ブラウザを開く。
     driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
 
-    # マイナビ転職のTOP画面を開く。
-    driver.get("https://tenshoku.mynavi.jp/")
+    # マイナビ転職のTOP画面を開く
+    # driver.get("https://tenshoku.mynavi.jp/")
+
+    # キーワード入力済のページを開く
+    driver.get("https://tenshoku.mynavi.jp/list/kw" + search_word + "/?jobsearchType=14&searchType=18")
 
     # 3秒待機
     time.sleep(3)
@@ -52,9 +55,9 @@ def main():
         pass # ポップアップが出ない場合は何も行わない
 
     # 検索ワードを入力してクリック
-    nyuryokuran = driver.find_element_by_class_name("topSearch__text")
-    nyuryokuran.send_keys(search_word)
-    driver.find_element_by_class_name("topSearch__button").click()
+    # nyuryokuran = driver.find_element_by_class_name("topSearch__text")
+    # nyuryokuran.send_keys(search_word)
+    # driver.find_element_by_class_name("topSearch__button").click()
 
     # 3秒待機
     time.sleep(3)
