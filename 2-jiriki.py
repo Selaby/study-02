@@ -58,9 +58,9 @@ def main():
 
     # 模範解答から拝借 driverを起動
     if os.name == 'nt': #Windows
-        driver = set_driver("chromedriver.exe", False)
+        driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
     elif os.name == 'posix': #Mac
-        driver = set_driver("chromedriver", False)
+        driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
     
     # マイナビ転職のTOP画面を開く
     # driver.get("https://tenshoku.mynavi.jp/")
